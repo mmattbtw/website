@@ -44,8 +44,9 @@ export default async function CarStatsPage() {
 
         <h1 className="text-2xl font-bold">so my car got rear ended...</h1>
         <p>
-          so this page won't update for a while until I get a new car. I'm sad
-          right now. T-T
+          {
+            "so this page won't update for a while until I get a new car. I'm sad right now. T-T"
+          }
         </p>
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="relative aspect-4/3 w-full min-h-0">
