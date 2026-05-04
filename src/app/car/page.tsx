@@ -1,5 +1,6 @@
 import { ArrowLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import NextLink from "next/link";
 
 import { Title } from "#/components/typography";
@@ -41,6 +42,34 @@ export default async function CarStatsPage() {
           Back
         </NextLink>
 
+        <h1 className="text-2xl font-bold">so my car got rear ended...</h1>
+        <p>
+          so this page won't update for a while until I get a new car. I'm sad
+          right now. T-T
+        </p>
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="relative aspect-4/3 w-full min-h-0">
+            <Image
+              src={"/cardone.webp"}
+              alt="Cardone"
+              fill
+              className="rounded-lg object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 896px) 50vw, 448px"
+              priority
+            />
+          </div>
+          <div className="relative aspect-4/3 w-full min-h-0">
+            <Image
+              src={"/cardone2.webp"}
+              alt="Cardtwo"
+              fill
+              className="rounded-lg object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 896px) 50vw, 448px"
+              priority
+            />
+          </div>
+        </div>
+ 
         <div className="w-full">
           <Title level="h1">Car Stats</Title>
           {latestRecord && (
