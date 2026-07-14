@@ -11,7 +11,7 @@ import { Record as CarRecord } from "../../lexiconTypes/types/net/mmatt/vitals/c
 import { bsky, createPdsClient, resolvePds } from "./bsky";
 import { env } from "./env";
 
-const STANDARD_SITE_PUBLICATION_URI =
+export const STANDARD_SITE_PUBLICATION_URI =
   "at://did:plc:tas6hj2xjrqben5653v5kohk/site.standard.publication/3m2cfka6wcs2o";
 
 export const EXTERNAL_POSTS: string[] = [
