@@ -31,6 +31,9 @@ export default function Home() {
           <p>
             <Link href="/writing">(;;;*_*) writing</Link>
           </p>
+          <p>
+            <Link href="/support">♡ support me</Link>
+          </p>
         </div>
 
         {/* InfoBox positioned for desktop and mobile */}
