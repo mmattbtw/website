@@ -85,21 +85,6 @@ export default async function SupportPage() {
           the places you can send a little support. thank you ♡
         </p>
         <section>
-          <h2 className="font-bold">wall of fame</h2>
-          <p>thank you to everyone who supports my work ♡</p>
-          {sponsors.length > 0 ? (
-            <ul>
-              {sponsors.map((sponsor) => (
-                <li key={sponsor.url}>
-                  <Link href={sponsor.url}>{sponsor.name.toLowerCase()}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>be the first one here!</p>
-          )}
-        </section>
-        <section>
           <div className="flex max-w-80 items-center justify-between gap-4 bg-white pr-2 text-black dark:bg-black dark:text-white">
             <p>
               preferred:{" "}
@@ -132,6 +117,21 @@ export default async function SupportPage() {
         </p>
         <CopyAddress label="bitcoin" address={bitcoinAddress} />
         <CopyAddress label="ethereum" address={ethereumAddress} />
+        <section>
+          <h2 className="font-bold">wall of fame</h2>
+          <p>thank you to everyone who supports my work ♡</p>
+          {sponsors.length > 0 ? (
+            <ul>
+              {sponsors.map((sponsor) => (
+                <li key={sponsor.url}>
+                  <Link href={sponsor.url}>{sponsor.name.toLowerCase()}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>be the first one here!</p>
+          )}
+        </section>
       </div>
     </main>
   );
