@@ -1,0 +1,10 @@
+{
+  "names": {
+    "matt": "ca27dd905566a4a0e3ac034afc0e5cf060314e6950f4d296fd8cabe99885a039"
+  },
+  "relays": {
+    "ca27dd905566a4a0e3ac034afc0e5cf060314e6950f4d296fd8cabe99885a039": [
+      "wss://relay.primal.net/"
+    ]
+  }
+}
