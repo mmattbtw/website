@@ -46,8 +46,8 @@ export default function Home() {
           <InfoBox />
         </div>
       </div>
-      <a href="https://fediverse.mmatt.net/@matt" rel="me" className="hidden">
-        @matt@mmatt.net
+      <a href="https://wetdry.world/@matt" rel="me" className="hidden">
+        @matt@wetdry.world
       </a>
     </main>
   );

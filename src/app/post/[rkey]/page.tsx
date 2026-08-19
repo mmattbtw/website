@@ -76,7 +76,7 @@ export async function generateMetadata({
     ],
     description: `by ˙⋆✮ matt ✮⋆˙ · ${readingTime(content).text}`,
     other: {
-      "fediverse:creator": "@matt@mmatt.net",
+      "fediverse:creator": "@matt@wetdry.world",
     },
   };
 }

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "my car - mmatt.net",
   description: "various statistics about my car and how I drive.",
   other: {
-    "fediverse:creator": "@matt@mmatt.net",
+    "fediverse:creator": "@matt@wetdry.world",
   },
 };
 
