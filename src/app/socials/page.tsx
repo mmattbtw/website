@@ -178,6 +178,14 @@ export default function SocialsPage() {
                 matt@opn.haus
               </Link>
             </li>
+            <li>
+              <Link
+                href="https://signal.me/#eu/-zdncvcvRKXt0pUbrDcQ3cR-LaR2QHsL6HTp_KmWWxUNWQHl-T9Ab7-2hpk1Kk69"
+                rel="me"
+              >
+                signal
+              </Link>
+            </li>
           </ul>
         </section>
 
