@@ -22,9 +22,7 @@ export default function Home() {
             <Link href="https://opn.haus">Open House*</Link>.
           </p>
           <p>
-            <Link href="https://matt.omg.lol">
-              &gt;&gt; all over the web &lt;&lt;
-            </Link>
+            <Link href="/socials">&gt;&gt; all over the web &lt;&lt;</Link>
             {" <_< ^_^ >_>  "}
             <Link href="mailto:matt@mmatt.net">&gt;&gt; mail me &lt;&lt;</Link>
           </p>
