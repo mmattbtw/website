@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 import Link from "#/components/ui/link";
 
@@ -13,6 +14,8 @@ const cashAppQr =
   "https://cash.app/qr/$mmatt625?size=288&margin=0&bg=FFFFFF&logoColor=00d64b&format=svg";
 const bitcoinAddress = "bc1q9n9k380ppzxyrnfxs9trg60gz2u75catdmcmel";
 const ethereumAddress = "0x9538eE2040eD7CA442b7C98cCa2ce0687860bCaf";
+const moneroAddress =
+  "82u5DMCg8G1Fjx5ECxiybp8SUWcvTCNeSCWPmfQ6KaSHYc1qfo2px63LLZAXWrEvHfgWXaTFojjyLeQU5cWay65bDxvqwZE";
 
 // add manual supporters here; github sponsors are merged in automatically below
 const manualSupporters: Supporter[] = [];
@@ -117,6 +120,7 @@ export default async function SupportPage() {
         </p>
         <CopyAddress label="bitcoin" address={bitcoinAddress} />
         <CopyAddress label="ethereum" address={ethereumAddress} />
+        <CopyAddress label="monero" address={moneroAddress} />
         <section>
           <h2 className="font-bold">wall of fame</h2>
           <p>thank you to everyone who supports my work ♡</p>

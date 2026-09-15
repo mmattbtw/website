@@ -23,7 +23,7 @@ export default function CopyAddress({
       <button
         type="button"
         onClick={copyAddress}
-        className="underline hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+        className="break-all text-left underline hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
       >
         {address.toLowerCase()}
       </button>{" "}
