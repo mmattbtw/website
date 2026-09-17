@@ -14,7 +14,7 @@ const cashAppQr =
   "https://cash.app/qr/$mmatt625?size=288&margin=0&bg=FFFFFF&logoColor=00d64b&format=svg";
 const bitcoinAddress = "bc1q736hpck9tvv36ml36dtjuf4cgucyrayvsyf0al";
 const bitcoinLightningAddress = "gayguy@cake.cash";
-const ethereumAddress = "0x9538eE2040eD7CA442b7C98cCa2ce0687860bCaf";
+const ethereumAddress = "0x1ACEeFc6581C7d8408BE5825e3b699351780d87d";
 const moneroAddress =
   "82u5DMCg8G1Fjx5ECxiybp8SUWcvTCNeSCWPmfQ6KaSHYc1qfo2px63LLZAXWrEvHfgWXaTFojjyLeQU5cWay65bDxvqwZE";
 const solanaAddress = "2DRNJ7Wb9FuGyFPBWgczJkPRbnrTaYfLUWNpyWPWNnVC";
