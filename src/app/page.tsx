@@ -32,6 +32,9 @@ export default function Home() {
           <p>
             <Link href="/support">♡ support me</Link>
           </p>
+          <p>
+            <Link href="/support/referrals">^_^ referral links</Link>
+          </p>
         </div>
 
         {/* InfoBox positioned for desktop and mobile */}

@@ -1,0 +1,53 @@
+{
+  "lexicon": 1,
+  "id": "net.mmatt.support.referrals",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "literal:self",
+      "description": "The referral links displayed on mmatt.net. Array order is display order.",
+      "record": {
+        "type": "object",
+        "required": ["links"],
+        "properties": {
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "ref",
+              "ref": "#link"
+            }
+          }
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "required": ["name", "url", "benefit"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "benefit": {
+          "type": "string"
+        },
+        "reward": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "detailsUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "detailsLabel": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

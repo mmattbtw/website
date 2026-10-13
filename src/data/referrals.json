@@ -1,0 +1,49 @@
+{
+  "$type": "net.mmatt.support.referrals",
+  "links": [
+    {
+      "name": "OpenCode Go",
+      "url": "https://opencode.ai/go?ref=9R2GQ4SQY3",
+      "benefit": "You get $5 in usage credit toward your Go usage limits.",
+      "reward": "I get $5 in usage credit too."
+    },
+    {
+      "name": "Amazon",
+      "url": "https://amzn.to/3SEKSwB",
+      "benefit": "Shop through my affiliate link.",
+      "reward": "As an Amazon Associate I earn from qualifying purchases."
+    },
+    {
+      "name": "Railway",
+      "url": "https://railway.com?referralCode=mmatt",
+      "benefit": "You get $20 in credits when you sign up.",
+      "reward": "I get 15% cash earnings after you pay your first bill.",
+      "detailsUrl": "https://docs.railway.com/reference/accounts#referrals",
+      "detailsLabel": "How referrals work"
+    },
+    {
+      "name": "Wispr Flow",
+      "url": "https://wisprflow.ai/r?MMATT1",
+      "benefit": "You get a free month of Pro when you sign up.",
+      "reward": "I get a free month when you dictate 2,000 words."
+    },
+    {
+      "name": "Cash App",
+      "url": "https://cash.app/refer/HCB3DPX",
+      "benefit": "You get $5 when you send $5 or more.",
+      "code": "HCB3DPX"
+    },
+    {
+      "name": "Privacy.com",
+      "url": "https://app.privacy.com/join/9X6CP",
+      "benefit": "You get $5.",
+      "reward": "I get $5 too."
+    },
+    {
+      "name": "Chase",
+      "url": "https://www.referyourchasecard.com/18s/M465X5MXH1",
+      "benefit": "Apply through my card referral link.",
+      "reward": "I can earn up to $500 cash back a year from referrals."
+    }
+  ]
+}
