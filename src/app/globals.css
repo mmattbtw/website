@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 /* Include @hamstack/bluesky-embed-rsc styles */
-@source "../node_modules/@hamstack/bluesky-embed-rsc/dist/**/*.js";
+@source "../../node_modules/@hamstack/bluesky-embed-rsc/dist/**/*.js";
 
 /*
   ---break---

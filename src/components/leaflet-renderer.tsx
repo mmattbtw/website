@@ -13,6 +13,7 @@ import type {
 import { BlueskyPostEmbed } from "@hamstack/bluesky-embed-rsc";
 import { Code as SyntaxHighlighter } from "bright";
 
+import embedStyles from "./bluesky-embed.module.css";
 import { Code, Paragraph, Title } from "./typography";
 
 type RichtextFacet = PubLeafletRichtextFacet.Main;
@@ -204,11 +205,16 @@ function BskyPostBlock({ block }: { block: PubLeafletBlocksBskyPost.Main }) {
   const bskyUrl = `https://bsky.app/profile/${did}/post/${rkey}`;
 
   return (
-    <BlueskyPostEmbed src={bskyUrl}>
-      <p className="text-muted-foreground italic">
-        Failed to load Bluesky post
-      </p>
-    </BlueskyPostEmbed>
+    <div className={embedStyles.embed}>
+      <BlueskyPostEmbed src={bskyUrl}>
+        <p className="text-muted-foreground italic">
+          Failed to load Bluesky post.{" "}
+          <a href={bskyUrl} className="underline underline-offset-4">
+            View on Bluesky
+          </a>
+        </p>
+      </BlueskyPostEmbed>
+    </div>
   );
 }
 
@@ -364,7 +370,7 @@ export function LeafletRenderer({
   isExternal?: boolean;
 }) {
   return (
-    <div className="[&>.bluesky-embed]:mt-8 [&>.bluesky-embed]:mb-0">
+    <div>
       {isExternal && originalUrl && (
         <p className="text-sm text-muted-foreground italic mb-6 bg-yellow-100/50 dark:bg-yellow-900/50 p-4 rounded-sm">
           This article was written for another publication, see the original{" "}
