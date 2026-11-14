@@ -26,7 +26,6 @@ export interface Post {
   description?: string;
   publishedAt: Date;
   updatedAt?: Date;
-  coverImage?: string;
   nodes: LeafletNode[];
   plaintext: string;
   /** Where the post lives on its publication's own site. */
@@ -129,7 +128,6 @@ function toPost(
     description: document.description || undefined,
     publishedAt: new Date(document.publishedAt),
     updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    coverImage: document.coverImage ? blobUrl(did, document.coverImage) : undefined,
     nodes,
     plaintext: document.textContent ?? toPlaintext(nodes),
     originalUrl: new URL(document.path ?? `/${rkey}`, publication.url).toString(),

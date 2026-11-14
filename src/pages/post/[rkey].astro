@@ -27,7 +27,7 @@ const time = readingTime(post.plaintext);
 <Article
   title={post.title}
   description={post.description ?? `by ${DISPLAY_NAME} · ${time}`}
-  image={post.coverImage}
+  image={`/og/${post.rkey}.png`}
   type="article"
   backHref="/writing"
   backLabel="writing"
