@@ -1,7 +1,7 @@
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 
-import { getPosts } from "../lib/posts";
+import { getFullPosts } from "../lib/posts";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../site";
 
 export const prerender = false;
@@ -18,7 +18,7 @@ function toHtml(plaintext: string): string {
 }
 
 export const GET: APIRoute = async (context) => {
-  const posts = await getPosts();
+  const posts = await getFullPosts();
 
   return rss({
     title: SITE_TITLE,

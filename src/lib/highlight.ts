@@ -1,60 +1,67 @@
 /**
  * Syntax highlighting for code blocks in posts. Posts render on demand in the
  * Worker, so this uses Shiki's core with the JavaScript regex engine (no
- * WebAssembly) and a fixed set of grammars to keep the bundle small.
+ * WebAssembly), and loads only the grammar a block asks for: compiling every
+ * grammar up front costs far more CPU than one request should spend.
  */
+import type { LanguageRegistration } from "shiki";
 import { createHighlighterCore, type HighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
-import bash from "shiki/langs/bash.mjs";
-import css from "shiki/langs/css.mjs";
-import diff from "shiki/langs/diff.mjs";
-import html from "shiki/langs/html.mjs";
-import ini from "shiki/langs/ini.mjs";
-import javascript from "shiki/langs/javascript.mjs";
-import json from "shiki/langs/json.mjs";
-import python from "shiki/langs/python.mjs";
-import sql from "shiki/langs/sql.mjs";
-import toml from "shiki/langs/toml.mjs";
-import tsx from "shiki/langs/tsx.mjs";
-import typescript from "shiki/langs/typescript.mjs";
-import yaml from "shiki/langs/yaml.mjs";
 import githubDark from "shiki/themes/github-dark.mjs";
 import githubLight from "shiki/themes/github-light.mjs";
 
-const grammars = [
-  bash,
-  css,
-  diff,
-  html,
-  ini,
-  javascript,
-  json,
-  python,
-  sql,
-  toml,
-  tsx,
-  typescript,
-  yaml,
-];
+type Grammar = () => Promise<{ default: LanguageRegistration[] }>;
 
-/** Grammar names (and their aliases) we can highlight. Anything else renders as plain text. */
-const known = new Set(
-  grammars.flat().flatMap((grammar) => [grammar.name, ...(grammar.aliases ?? [])]),
-);
+const bash: Grammar = () => import("shiki/langs/bash.mjs");
+const javascript: Grammar = () => import("shiki/langs/javascript.mjs");
+const typescript: Grammar = () => import("shiki/langs/typescript.mjs");
+const yaml: Grammar = () => import("shiki/langs/yaml.mjs");
+const python: Grammar = () => import("shiki/langs/python.mjs");
+
+/** Language names (and common aliases) we can highlight. Anything else renders as plain text. */
+const grammars = new Map<string, Grammar>([
+  ["bash", bash],
+  ["sh", bash],
+  ["shell", bash],
+  ["shellscript", bash],
+  ["zsh", bash],
+  ["css", () => import("shiki/langs/css.mjs")],
+  ["diff", () => import("shiki/langs/diff.mjs")],
+  ["html", () => import("shiki/langs/html.mjs")],
+  ["ini", () => import("shiki/langs/ini.mjs")],
+  ["javascript", javascript],
+  ["js", javascript],
+  ["json", () => import("shiki/langs/json.mjs")],
+  ["python", python],
+  ["py", python],
+  ["sql", () => import("shiki/langs/sql.mjs")],
+  ["toml", () => import("shiki/langs/toml.mjs")],
+  ["tsx", () => import("shiki/langs/tsx.mjs")],
+  ["typescript", typescript],
+  ["ts", typescript],
+  ["yaml", yaml],
+  ["yml", yaml],
+]);
 
 let highlighter: Promise<HighlighterCore> | undefined;
 
 export async function highlight(code: string, language: string | undefined): Promise<string> {
   highlighter ??= createHighlighterCore({
     themes: [githubLight, githubDark],
-    langs: grammars,
+    langs: [],
     engine: createJavaScriptRegexEngine(),
   });
 
-  const name = language?.toLowerCase();
+  const shiki = await highlighter;
+  const name = language?.toLowerCase() ?? "";
+  const grammar = grammars.get(name);
 
-  return (await highlighter).codeToHtml(code, {
-    lang: name && known.has(name) ? name : "text",
+  if (grammar && !shiki.getLoadedLanguages().includes(name)) {
+    await shiki.loadLanguage(...(await grammar()).default);
+  }
+
+  return shiki.codeToHtml(code, {
+    lang: grammar ? name : "text",
     themes: { light: "github-light", dark: "github-dark" },
   });
 }

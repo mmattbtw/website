@@ -5,6 +5,7 @@
  * is deliberately no in-memory cache here that could go stale in a Worker.
  */
 import type { Did, ResourceUri } from "@atcute/lexicons";
+import * as v from "@atcute/lexicons/validations";
 import { SiteStandardDocument, SiteStandardPublication } from "@atcute/standard-site";
 
 import { DID, EXTERNAL_POSTS, PUBLICATION_URI } from "../site";
@@ -19,21 +20,25 @@ import {
 } from "./atproto";
 import { isLeafletContent, toNodes, toPlaintext, type LeafletNode } from "./leaflet";
 
-export interface Post {
+/** Enough to list a post, without parsing its content. */
+export interface PostSummary {
   rkey: string;
   uri: ResourceUri;
-  /** Repo the document lives in; blobs are served from here. */
-  did: Did;
   title: string;
   description?: string;
   publishedAt: Date;
+  /** Written for someone else's publication. */
+  isExternal: boolean;
+}
+
+export interface Post extends PostSummary {
+  /** Repo the document lives in; blobs are served from here. */
+  did: Did;
   updatedAt?: Date;
   nodes: LeafletNode[];
   plaintext: string;
   /** Where the post lives on its publication's own site. */
   originalUrl: string;
-  /** Written for someone else's publication. */
-  isExternal: boolean;
 }
 
 type Document = SiteStandardDocument.Main;
@@ -54,7 +59,7 @@ export async function getPost(rkey: string): Promise<Post | null> {
   return toPost(document, publication.value, false);
 }
 
-export async function getLatestPost(): Promise<Post | undefined> {
+export async function getLatestPost(): Promise<PostSummary | undefined> {
   const [latest] = await getPosts();
 
   return latest;
@@ -66,23 +71,70 @@ export function readingTime(text: string): string {
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
 
-/** All posts, newest first. */
-export async function getPosts(): Promise<Post[]> {
+/** All posts, newest first, without parsing their content. Cheap enough for list pages. */
+export async function getPosts(): Promise<PostSummary[]> {
+  const [documents, external] = await Promise.all([
+    listOwnDocuments(),
+    Promise.all(EXTERNAL_POSTS.map(loadExternalPost)),
+  ]);
+
+  return newestFirst([
+    ...documents.flatMap((entry) =>
+      isLeafletDocument(entry.value) ? [toSummary(entry, false)] : [],
+    ),
+    ...external,
+  ]);
+}
+
+/** All posts with their content, newest first. Only the RSS feed needs this. */
+export async function getFullPosts(): Promise<Post[]> {
   const [publication, documents, external] = await Promise.all([
     getRecord(PUBLICATION_URI, SiteStandardPublication.mainSchema),
-    listRecords("site.standard.document", SiteStandardDocument.mainSchema, 1000),
+    listOwnDocuments(),
     Promise.all(EXTERNAL_POSTS.map(loadExternalPost)),
   ]);
 
   if (!publication) throw new Error(`Publication ${PUBLICATION_URI} not found`);
 
-  const own = documents
-    .filter((entry) => entry.value.site === PUBLICATION_URI)
-    .map((entry) => toPost(entry, publication.value, false));
+  return newestFirst([
+    ...documents.map((entry) => toPost(entry, publication.value, false)),
+    ...external,
+  ]);
+}
 
-  return [...own, ...external]
-    .filter((post): post is Post => post !== null)
+async function listOwnDocuments(): Promise<Entry<Document>[]> {
+  const documents = await listRecords(
+    "site.standard.document",
+    SiteStandardDocument.mainSchema,
+    1000,
+  );
+
+  return documents.filter((entry) => entry.value.site === PUBLICATION_URI);
+}
+
+function newestFirst<T extends PostSummary>(posts: (T | null)[]): T[] {
+  return posts
+    .filter((post): post is T => post !== null)
     .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+}
+
+/** Only the content's type, so lists can skip validating every block. */
+const leafletContentType = v.object({ $type: v.literal("pub.leaflet.content") });
+
+/** A shallow check; the full content is only validated when a post is rendered. */
+function isLeafletDocument(document: Document): boolean {
+  return v.is(leafletContentType, document.content);
+}
+
+function toSummary(entry: Entry<Document>, isExternal: boolean): PostSummary {
+  return {
+    rkey: entry.rkey,
+    uri: entry.uri,
+    title: entry.value.title,
+    description: entry.value.description || undefined,
+    publishedAt: new Date(entry.value.publishedAt),
+    isExternal,
+  };
 }
 
 async function loadExternalPost(uri: string): Promise<Post | null> {
@@ -131,16 +183,11 @@ function toPost(
   const nodes = toNodes(document.content, did);
 
   return {
-    rkey,
-    uri,
+    ...toSummary(entry, isExternal),
     did,
-    title: document.title,
-    description: document.description || undefined,
-    publishedAt: new Date(document.publishedAt),
     updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
     nodes,
     plaintext: document.textContent ?? toPlaintext(nodes),
     originalUrl: new URL(document.path ?? `/${rkey}`, publication.url).toString(),
-    isExternal,
   };
 }
