@@ -16,8 +16,10 @@ const HEIGHT = 630;
 const FRAME = 16;
 
 /** Vite inlines assets as data URLs; satori wants the raw font bytes. */
-function fontData(dataUrl: string): Buffer {
-  return Buffer.from(dataUrl.slice(dataUrl.indexOf(",") + 1), "base64");
+function fontData(dataUrl: string): ArrayBuffer {
+  const binary = atob(dataUrl.slice(dataUrl.indexOf(",") + 1));
+
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0)).buffer;
 }
 
 const fonts = [
@@ -27,7 +29,9 @@ const fonts = [
 
 function titleSize(title: string): number {
   if (title.length > 70) return 56;
+
   if (title.length > 40) return 68;
+
   return 80;
 }
 
@@ -89,8 +93,8 @@ function Card({ title }: { title?: string }) {
 }
 
 /** A 1200×630 PNG with `title` on it, or the plain site card when there's no title. */
-export async function renderCard(title?: string): Promise<Uint8Array> {
+export async function renderCard(title?: string): Promise<Uint8Array<ArrayBuffer>> {
   const svg = await satori(<Card title={title} />, { width: WIDTH, height: HEIGHT, fonts });
 
-  return new Uint8Array(await sharp(Buffer.from(svg)).png().toBuffer());
+  return new Uint8Array(await sharp(new TextEncoder().encode(svg)).png().toBuffer());
 }
