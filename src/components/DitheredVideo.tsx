@@ -66,6 +66,10 @@ export default function DitheredVideo({
       }
 
       try {
+        // The video has an alpha channel. Without clearing to black first, each
+        // frame composites over the last and the comet smears into a ring.
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, width, height);
         context.drawImage(video, 0, 0, width, height);
         const image = context.getImageData(0, 0, width, height);
         dither(image);
