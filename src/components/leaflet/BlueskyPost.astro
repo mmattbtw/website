@@ -1,0 +1,62 @@
+---
+/** A Bluesky post rendered at build time as a plain card. No iframe, no JS. */
+import { bskyAppUrl, getEmbeddedPost } from "../../lib/bluesky";
+import Segments from "./Segments.astro";
+
+interface Props {
+  uri: string;
+}
+
+const { uri } = Astro.props;
+const post = await getEmbeddedPost(uri);
+const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
+---
+
+{post ? (
+  <figure class="mx-auto my-8 max-w-xl rounded-lg border border-rule p-5 text-base">
+    <figcaption class="mb-3 flex items-center gap-3">
+      {post.avatar && (
+        <img
+          src={post.avatar}
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          class="size-10 rounded-full"
+        />
+      )}
+      <span class="min-w-0 leading-tight">
+        <a href={post.authorUrl} class="link block truncate font-bold">
+          {post.authorName}
+        </a>
+        <span class="block truncate text-sm text-muted">@{post.authorHandle}</span>
+      </span>
+    </figcaption>
+    <blockquote class="whitespace-pre-wrap">
+      <Segments segments={post.segments} />
+    </blockquote>
+    {post.images.length > 0 && (
+      <div class="mt-3 grid grid-cols-2 gap-2">
+        {post.images.map((image) => (
+          <img
+            src={image.thumb}
+            alt={image.alt}
+            loading="lazy"
+            class="aspect-square w-full rounded-sm object-cover"
+          />
+        ))}
+      </div>
+    )}
+    <p class="mt-3 text-sm text-muted">
+      <a href={post.href} class="link">
+        {dateFormat.format(post.createdAt)} · view on bluesky
+      </a>
+    </p>
+  </figure>
+) : (
+  <p class="my-8 text-base italic">
+    <a href={bskyAppUrl(uri)} class="link">
+      view this post on bluesky
+    </a>
+  </p>
+)}

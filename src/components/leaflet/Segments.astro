@@ -1,0 +1,31 @@
+---
+import type { Segment } from "../../lib/richtext";
+
+interface Props {
+  segments: Segment[];
+}
+
+const { segments } = Astro.props;
+---
+
+{segments.map((s) => {
+  const classes = [
+    s.bold && "font-bold",
+    s.italic && "italic",
+    s.underline && "underline",
+    s.strike && "line-through",
+    s.code && "rounded-sm bg-wash px-1 py-0.5 text-[0.9em]",
+    s.highlight && "bg-ink text-paper",
+  ].filter(Boolean);
+
+  const Tag = s.code ? "code" : s.highlight ? "mark" : "span";
+  const inner = classes.length > 0 ? <Tag class={classes.join(" ")}>{s.text}</Tag> : s.text;
+
+  return s.href ? (
+    <a class="link" href={s.href}>
+      {inner}
+    </a>
+  ) : (
+    inner
+  );
+})}

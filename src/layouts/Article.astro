@@ -1,0 +1,27 @@
+---
+/** A centered reading column for long-form pages: posts, policies, lists. */
+import Link from "../components/Link.astro";
+import Base from "./Base.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  /** Where the back link goes. */
+  backHref?: string;
+  backLabel?: string;
+}
+
+const { backHref = "/", backLabel = "back home", ...meta } = Astro.props;
+---
+
+<Base {...meta}>
+  <slot name="head" slot="head" />
+  <main class="mx-auto w-full max-w-3xl px-4 py-8 sm:py-16">
+    <p class="mb-10 text-base">
+      <Link href={backHref}>&lt;&lt; {backLabel}</Link>
+    </p>
+    <slot />
+  </main>
+</Base>

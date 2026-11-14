@@ -1,0 +1,19 @@
+---
+import type { ImageNode } from "../../lib/leaflet";
+
+interface Props {
+  image: ImageNode;
+}
+
+const { image } = Astro.props;
+---
+
+<img
+  src={image.src}
+  alt={image.alt}
+  width={image.width}
+  height={image.height}
+  loading="lazy"
+  decoding="async"
+  class="mx-auto my-8 h-auto max-h-[70vh] w-auto max-w-full rounded-sm"
+/>

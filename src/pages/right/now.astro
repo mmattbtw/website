@@ -1,0 +1,52 @@
+---
+import { Image } from "astro:assets";
+
+import me from "../../assets/matt.webp";
+import Link from "../../components/Link.astro";
+import Article from "../../layouts/Article.astro";
+import { listRecords } from "../../lib/atproto";
+import { statusSchema } from "../../lib/records";
+
+const statuses = (await listRecords("net.mmatt.right.now", statusSchema, 1000)).sort(
+  (a, b) => Date.parse(b.value.createdAt) - Date.parse(a.value.createdAt),
+);
+
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "America/Chicago",
+});
+---
+
+<Article title="right now" description="its- its like its like. <_< ^_^ >_>">
+  <Image
+    src={me}
+    alt="Photo of Matt Morris, red hair, glasses, holding his iPhone in the mirror, taking a picture of himself."
+    width={100}
+    height={100}
+    class="mb-8 rounded-lg"
+  />
+  <h1 class="text-3xl font-bold">matt: right now</h1>
+  <p class="mt-2 text-muted">
+    also on <Link href="https://bsky.app/profile/did:plc:rwb72l7iwkraojrbrbwitnkd">Bluesky</Link>{" "}
+    and <Link href="https://status.lol/matt">status.lol</Link>.
+  </p>
+
+  <ol class="mt-10 space-y-6">
+    {statuses.map(({ value }) => (
+      <li class="flex items-center justify-between gap-4">
+        <div>
+          <p class="text-pretty">{value.text}</p>
+          <p class="text-sm text-muted">
+            <time datetime={value.createdAt}>{dateFormat.format(new Date(value.createdAt))}</time>
+          </p>
+        </div>
+        {value.emoji && (
+          <span class="text-5xl" aria-hidden="true">
+            {value.emoji}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</Article>

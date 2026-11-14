@@ -1,0 +1,22 @@
+---
+import Link from "../../components/Link.astro";
+import Page from "../../layouts/Page.astro";
+import { getReferrals } from "../../lib/support";
+
+const referrals = await getReferrals();
+---
+
+<Page title="referrals" description="all my referral links, thank you if you use them!" back>
+  <h1 class="font-bold">referrals</h1>
+  <p>all my referral links, thank you if you use them!</p>
+  <ul class="space-y-4">
+    {referrals.map((referral) => (
+      <li>
+        <Link href={referral.url} rel="sponsored noopener noreferrer">
+          {referral.name}
+        </Link>
+        <p>{referral.benefit}</p>
+      </li>
+    ))}
+  </ul>
+</Page>

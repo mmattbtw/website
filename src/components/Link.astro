@@ -1,0 +1,17 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"a">;
+
+const { class: className, rel, ...rest } = Astro.props;
+const href = String(Astro.props.href ?? "");
+const external = /^https?:/.test(href);
+---
+
+<a
+  class:list={["link", className]}
+  rel={rel ?? (external ? "noopener noreferrer" : undefined)}
+  {...rest}
+>
+  <slot />
+</a>

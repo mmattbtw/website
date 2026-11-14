@@ -1,0 +1,108 @@
+---
+import { Code } from "astro:components";
+
+import type { LeafletNode } from "../../lib/leaflet";
+import BlueskyPost from "./BlueskyPost.astro";
+import Image from "./Image.astro";
+import List from "./List.astro";
+import Segments from "./Segments.astro";
+
+interface Props {
+  nodes: LeafletNode[];
+}
+
+const { nodes } = Astro.props;
+
+const headingSizes = {
+  1: "text-3xl",
+  2: "text-2xl",
+  3: "text-xl",
+  4: "text-lg",
+  5: "text-base",
+  6: "text-base",
+};
+
+const alignClass = {
+  left: "",
+  center: "text-center",
+  right: "text-right",
+  justify: "text-justify",
+};
+---
+
+<div class="leading-7 text-pretty">
+  {nodes.map((node) => {
+    const align = node.align ? alignClass[node.align] : "";
+
+    switch (node.kind) {
+      case "paragraph":
+        return (
+          <p
+            class:list={[
+              "mt-6 first:mt-0",
+              node.size === "large" && "text-xl md:text-2xl",
+              node.size === "small" && "text-base",
+              align,
+            ]}
+          >
+            <Segments segments={node.segments} />
+          </p>
+        );
+
+      case "heading": {
+        const Tag = `h${node.level}` as const;
+        return (
+          <Tag
+            class:list={[
+              "mt-10 font-bold tracking-tight text-balance first:mt-0",
+              headingSizes[node.level],
+              align,
+            ]}
+          >
+            <Segments segments={node.segments} />
+          </Tag>
+        );
+      }
+
+      case "image":
+        return <Image image={node} />;
+
+      case "code":
+        return (
+          <div class="mt-6 overflow-hidden rounded-sm text-sm">
+            <Code
+              code={node.code}
+              lang={node.lang ?? "plaintext"}
+              themes={{ light: "github-light", dark: "github-dark" }}
+            />
+          </div>
+        );
+
+      case "quote":
+        return (
+          <blockquote class:list={["mt-6 border-l-2 border-ink pl-4 italic", align]}>
+            <Segments segments={node.segments} />
+          </blockquote>
+        );
+
+      case "rule":
+        return <hr class="my-10 border-rule" />;
+
+      case "bsky":
+        return <BlueskyPost uri={node.uri} />;
+
+      case "list":
+        return <List list={node} />;
+
+      case "website":
+        return (
+          <p class="mt-6">
+            <a href={node.href} class="link">
+              {node.title ?? node.href}
+            </a>
+            {node.description && <span class="block text-base text-muted">{node.description}</span>}
+          </p>
+        );
+    }
+  })}
+</div>

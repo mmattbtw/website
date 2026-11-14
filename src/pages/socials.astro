@@ -1,0 +1,57 @@
+---
+import CopyText from "../components/CopyText";
+import Link from "../components/Link.astro";
+import { groups, inactive, mail } from "../data/socials";
+import Page from "../layouts/Page.astro";
+---
+
+<Page title="all over the web" description="matt on the world wide web." back>
+  <h1 class="font-bold">˙⋆✮ matt on the world wide web ✮⋆˙</h1>
+
+  {groups.map((group) => (
+    <section>
+      <h2 class="font-bold">{group.heading}</h2>
+      <ul>
+        {group.items.map((item) => (
+          <li>
+            <Link href={item.href} rel="me">
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {group.copy && <CopyText client:visible label={group.copy.label} value={group.copy.value} />}
+    </section>
+  ))}
+
+  <section>
+    <h2 class="font-bold">mail me</h2>
+    <ul>
+      {mail.map((item) => (
+        <li>
+          <Link href={item.href} rel="me">
+            {item.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <p>
+    <Link href="/support">♡ support me</Link>
+  </p>
+
+  <details>
+    <summary class="cursor-pointer underline">inactive profiles</summary>
+    <ul class="pt-4">
+      {inactive.map((item) => (
+        <li>
+          <Link href={item.href} rel="me">
+            {item.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+    <p>xbox: @mmattbtw</p>
+  </details>
+</Page>

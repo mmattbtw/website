@@ -1,0 +1,6 @@
+dist
+.astro
+.wrangler
+bun.lock
+worker-configuration.d.ts
+tools/oxlint/anti-slop

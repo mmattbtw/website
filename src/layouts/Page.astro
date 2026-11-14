@@ -1,0 +1,44 @@
+---
+/**
+ * The default page: a narrow column pinned to the top-left, optionally over a
+ * dithered video. Most of the site uses this.
+ */
+import DitheredVideo from "../components/DitheredVideo";
+import Link from "../components/Link.astro";
+import Base from "./Base.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** Video URL to dither behind the page. */
+  video?: string;
+  /** Show a "back home" link above the content. */
+  back?: boolean;
+}
+
+const { video, back = false, ...meta } = Astro.props;
+---
+
+<Base {...meta}>
+  <slot name="head" slot="head" />
+  {video && (
+    <DitheredVideo
+      client:only="react"
+      src={video}
+      pixelSize={3}
+      className="fixed inset-0 -z-10 invert dark:invert-0"
+    />
+  )}
+  <main class="relative min-h-dvh px-1.5 pt-1.5 pb-16">
+    <div class="max-w-148 space-y-4">
+      {back && (
+        <p>
+          <Link href="/">&lt;&lt; back home</Link>
+        </p>
+      )}
+      <slot />
+    </div>
+    <slot name="aside" />
+  </main>
+</Base>

@@ -1,0 +1,75 @@
+---
+import { Image } from "astro:assets";
+
+import carOne from "../assets/cardone.webp";
+import carTwo from "../assets/cardone2.webp";
+import CarStats, { type Reading } from "../components/CarStats";
+import Link from "../components/Link.astro";
+import Article from "../layouts/Article.astro";
+import { listRecords } from "../lib/atproto";
+import { carSchema } from "../lib/records";
+import { DID } from "../site";
+
+const records = await listRecords("net.mmatt.vitals.car", carSchema, 10_000);
+const latest = records[0]?.value;
+
+// Oldest first, dropping consecutive readings that didn't change.
+const readings: Reading[] = [];
+let previous = "";
+
+for (const { value } of [...records].reverse()) {
+  const key = `${value.carTraveledDistance}|${value.carPercentFuelRemaining}|${value.carFuelRange}|${value.amountRemaining}`;
+
+  if (key === previous) continue;
+  previous = key;
+
+  readings.push([
+    Date.parse(value.createdAt),
+    value.carFuelRange,
+    Number(value.carPercentFuelRemaining),
+    Number(value.amountRemaining),
+    value.carTraveledDistance,
+  ]);
+}
+---
+
+<Article title="my car" description="various statistics about my car and how I drive.">
+  <h1 class="text-3xl font-bold">so my car got rear ended...</h1>
+  <p class="mt-4">
+    so this page won't update for a while until I get a new car. I'm sad right now. T-T
+  </p>
+
+  <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <Image
+      src={carOne}
+      alt="my car after it was rear ended"
+      widths={[400, 800]}
+      sizes="(max-width: 640px) 100vw, 384px"
+      class="aspect-4/3 w-full rounded-lg object-cover"
+    />
+    <Image
+      src={carTwo}
+      alt="another angle of the damage"
+      widths={[400, 800]}
+      sizes="(max-width: 640px) 100vw, 384px"
+      class="aspect-4/3 w-full rounded-lg object-cover"
+    />
+  </div>
+
+  <h2 class="mt-12 text-2xl font-bold">car stats</h2>
+  {latest && (
+    <p class="mt-2 text-muted">
+      {latest.carYear} {latest.carMake?.toLowerCase()} {latest.carModel?.toLowerCase()} ·{" "}
+      {readings.length.toLocaleString("en-US")} readings ·{" "}
+      <Link href={`https://pdsls.dev/at://${DID}/net.mmatt.vitals.car`}>raw records</Link>
+    </p>
+  )}
+
+  <div class="mt-6">
+    {readings.length > 0 ? (
+      <CarStats client:visible readings={readings} />
+    ) : (
+      <p>no car records found.</p>
+    )}
+  </div>
+</Article>

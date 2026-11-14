@@ -1,0 +1,47 @@
+---
+import InfoBox from "../components/InfoBox";
+import Link from "../components/Link.astro";
+import Page from "../layouts/Page.astro";
+import { getLatestPost } from "../lib/posts";
+import { DISPLAY_NAME, EMAIL, FEDIVERSE_HANDLE, FEDIVERSE_URL, VIDEOS } from "../site";
+
+const post = await getLatestPost();
+
+const latestPost = post && {
+  title: post.title,
+  description: post.description,
+  href: `/post/${post.rkey}`,
+  date: post.publishedAt.toISOString(),
+};
+---
+
+<Page video={VIDEOS.home}>
+  <h1 class="on-video font-bold">{DISPLAY_NAME}</h1>
+  <p class="on-video">
+    (ﾉ´ヮ`)ﾉ*: ･ﾟ i'm a full time computer science student at{" "}
+    <Link href="https://mtsu.edu">MTSU</Link>, part time technologist for{" "}
+    <Link href="https://teal.fm">teal.fm</Link>, and a resident at{" "}
+    <Link href="https://opn.haus">Open House*</Link>.
+  </p>
+  <p>
+    <Link href="/socials">&gt;&gt; all over the web &lt;&lt;</Link>
+    <span class="on-video whitespace-pre"> &lt;_&lt; ^_^ &gt;_&gt; </span>
+    <Link href={`mailto:${EMAIL}`}>&gt;&gt; mail me &lt;&lt;</Link>
+  </p>
+  <p>
+    <Link href="/writing">(;;;*_*) writing</Link>
+  </p>
+  <p>
+    <Link href="/support">♡ support me</Link>
+  </p>
+  <p>
+    <Link href="/support/referrals">^_^ referral links</Link>
+  </p>
+  <a href={FEDIVERSE_URL} rel="me" class="hidden">
+    {FEDIVERSE_HANDLE}
+  </a>
+
+  <div slot="aside" class="pt-8 md:fixed md:top-4 md:right-4 md:pt-0">
+    <InfoBox client:only="react" latestPost={latestPost} />
+  </div>
+</Page>

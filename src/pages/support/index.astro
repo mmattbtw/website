@@ -1,0 +1,78 @@
+---
+import CopyText from "../../components/CopyText";
+import Link from "../../components/Link.astro";
+import Page from "../../layouts/Page.astro";
+import { getSponsors, type Supporter } from "../../lib/support";
+
+const cashApp = "https://cash.app/$mmatt625";
+
+const cashAppQr =
+  "https://cash.app/qr/$mmatt625?size=288&margin=0&bg=FFFFFF&logoColor=00d64b&format=svg";
+
+const wallets = [
+  { label: "bitcoin", value: "bc1q736hpck9tvv36ml36dtjuf4cgucyrayvsyf0al" },
+  { label: "bitcoin lightning", value: "gayguy@cake.cash" },
+  { label: "ethereum", value: "0x1ACEeFc6581C7d8408BE5825e3b699351780d87d" },
+  {
+    label: "monero",
+    value:
+      "82u5DMCg8G1Fjx5ECxiybp8SUWcvTCNeSCWPmfQ6KaSHYc1qfo2px63LLZAXWrEvHfgWXaTFojjyLeQU5cWay65bDxvqwZE",
+  },
+  { label: "solana", value: "2DRNJ7Wb9FuGyFPBWgczJkPRbnrTaYfLUWNpyWPWNnVC" },
+];
+
+// Add supporters who aren't GitHub sponsors here.
+const manual: Supporter[] = [];
+
+const supporters = [...(await getSponsors()), ...manual];
+---
+
+<Page title="support" description="ways to financially support matt." back>
+  <h1 class="font-bold">support me</h1>
+  <p>
+    if you enjoy my work, projects, or general internet presence, here are the places you can send a
+    little support. thank you ♡
+  </p>
+
+  <section class="flex max-w-80 items-center justify-between gap-4">
+    <p>
+      preferred: <Link href={cashApp}>cash.app/$mmatt625</Link>
+    </p>
+    <a href={cashApp} class="shrink-0 bg-white p-1">
+      <img src={cashAppQr} alt="cash app qr code for $mmatt625" width="120" height="120" />
+    </a>
+  </section>
+
+  <p>
+    preferred: <Link href="https://github.com/sponsors/mmattbtw">github sponsors</Link>
+  </p>
+  <p>
+    <Link href="https://ko-fi.com/mmatt">ko-fi</Link> (has paypal fees iirc)
+  </p>
+
+  {wallets.map((wallet) => (
+    <div>
+      <CopyText client:visible label={wallet.label} value={wallet.value} />
+    </div>
+  ))}
+
+  <section>
+    <h2 class="font-bold">wall of fame</h2>
+    <p>thank you to everyone who supports my work ♡</p>
+    {supporters.length > 0 ? (
+      <ul>
+        {supporters.map((supporter) => (
+          <li>
+            <Link href={supporter.url}>{supporter.name.toLowerCase()}</Link>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>be the first one here!</p>
+    )}
+  </section>
+
+  <p>
+    <Link href="/support/referrals">^_^ referral links</Link>
+  </p>
+</Page>

@@ -1,0 +1,27 @@
+---
+import type { ListNode } from "../../lib/leaflet";
+import Image from "./Image.astro";
+import Segments from "./Segments.astro";
+
+interface Props {
+  list: ListNode;
+}
+
+const { list } = Astro.props;
+const Tag = list.ordered ? "ol" : "ul";
+---
+
+<Tag
+  class:list={["my-4 ml-6 space-y-2", list.ordered ? "list-decimal" : "list-disc"]}
+  start={list.ordered && list.start !== 1 ? list.start : undefined}
+>
+  {list.items.map((item) => (
+    <li class:list={["leading-7", item.checked !== undefined && "list-none"]}>
+      {item.checked !== undefined && (
+        <input type="checkbox" checked={item.checked} disabled class="mr-2 align-middle" />
+      )}
+      {item.image ? <Image image={item.image} /> : <Segments segments={item.segments} />}
+      {item.children && <Astro.self list={item.children} />}
+    </li>
+  ))}
+</Tag>

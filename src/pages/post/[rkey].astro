@@ -1,0 +1,69 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Image } from "astro:assets";
+
+import me from "../../assets/matt.webp";
+import Link from "../../components/Link.astro";
+import LeafletContent from "../../components/leaflet/LeafletContent.astro";
+import Article from "../../layouts/Article.astro";
+import { getPosts, readingTime, type Post } from "../../lib/posts";
+import { BLUESKY_URL, DISPLAY_NAME } from "../../site";
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({ params: { rkey: post.rkey }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" });
+const time = readingTime(post.plaintext);
+---
+
+<Article
+  title={post.title}
+  description={post.description ?? `by ${DISPLAY_NAME} · ${time}`}
+  image={post.coverImage}
+  type="article"
+  backHref="/writing"
+  backLabel="writing"
+>
+  <Fragment slot="head">
+    <link rel="site.standard.document" href={post.uri} />
+    <meta property="article:published_time" content={post.publishedAt.toISOString()} />
+  </Fragment>
+
+  <article>
+    <header class="mb-10 space-y-4 border-b border-rule pb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-balance md:text-4xl">{post.title}</h1>
+      {post.description && <p class="text-muted">{post.description}</p>}
+      <p class="flex flex-wrap items-center gap-x-2 text-sm text-muted">
+        <Image src={me} alt="" width={16} height={16} class="size-4 rounded-full" />
+        <a href={BLUESKY_URL} class="link">
+          {DISPLAY_NAME}
+        </a>
+        <span>·</span>
+        <time datetime={post.publishedAt.toISOString()}>{dateFormat.format(post.publishedAt)}</time>
+        <span>·</span>
+        <span>{time}</span>
+        <span>·</span>
+        <a href={post.originalUrl} class="link">
+          original page
+        </a>
+      </p>
+    </header>
+
+    {post.isExternal && (
+      <p class="mb-8 rounded-sm bg-wash p-4 text-base italic">
+        this was written for another publication. see the original{" "}
+        <Link href={post.originalUrl}>here</Link>.
+      </p>
+    )}
+
+    <LeafletContent nodes={post.nodes} />
+  </article>
+</Article>

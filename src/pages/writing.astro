@@ -1,0 +1,28 @@
+---
+import Link from "../components/Link.astro";
+import Page from "../layouts/Page.astro";
+import { getPosts } from "../lib/posts";
+import { VIDEOS } from "../site";
+
+const posts = await getPosts();
+const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "short", timeZone: "UTC" });
+---
+
+<Page title="writing" description="things i've written." video={VIDEOS.writing} back>
+  <h1 class="on-video w-fit font-bold">(;;;*_*) writing</h1>
+  <ul class="space-y-1">
+    {posts.map((post) => (
+      <li>
+        <Link href={`/post/${post.rkey}`}>
+          <time datetime={post.publishedAt.toISOString()}>
+            {dateFormat.format(post.publishedAt)}
+          </time>{" "}
+          - {post.title}
+        </Link>
+      </li>
+    ))}
+  </ul>
+  <p>
+    <Link href="/rss.xml">rss feed</Link>
+  </p>
+</Page>

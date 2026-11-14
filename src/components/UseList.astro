@@ -1,0 +1,27 @@
+---
+import type { UseItem } from "../data/uses";
+import Link from "./Link.astro";
+
+interface Props {
+  items: UseItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="ml-6 list-disc">
+  {items.map((item) => (
+    <li>
+      {item.label && `${item.label}: `}
+      {item.href ? <Link href={item.href}>{item.text}</Link> : item.text}
+      {item.note && ` ${item.note}`}
+      {item.links?.map((link, i) => (
+        <>
+          {i > 0 && ", "}
+          <Link href={link.href}>{link.text}</Link>
+        </>
+      ))}
+      {item.children && <Astro.self items={item.children} />}
+    </li>
+  ))}
+</ul>

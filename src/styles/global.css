@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/*
+  Two colors, flipped for dark mode. Everything else is mixed from these so
+  the site stays strictly monochrome.
+*/
+:root {
+  --paper: #ffffff;
+  --ink: #000000;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #000000;
+    --ink: #ededed;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  --color-rule: color-mix(in srgb, var(--ink) 18%, var(--paper));
+  --color-wash: color-mix(in srgb, var(--ink) 6%, var(--paper));
+
+  --font-sans: var(--font-google-sans-code), ui-monospace, monospace;
+  --font-mono: var(--font-google-sans-code), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+}
+
+/* The house link: underlined, inverts on hover. */
+@utility link {
+  text-decoration-line: underline;
+  text-underline-offset: 0.15em;
+  background-color: var(--paper);
+
+  &:hover {
+    background-color: var(--ink);
+    color: var(--paper);
+  }
+}
+
+/* Text that sits on top of the dithered video gets a solid backing. */
+@utility on-video {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+/* Shiki emits both themes; pick one per color scheme. */
+@media (prefers-color-scheme: dark) {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
