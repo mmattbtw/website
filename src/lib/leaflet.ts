@@ -18,7 +18,6 @@ import {
   PubLeafletPagesLinearDocument,
 } from "@atcute/leaflet";
 import { is } from "@atcute/lexicons/validations";
-import { bundledLanguages, type BundledLanguage } from "shiki";
 
 import { blobUrl } from "./atproto";
 import { leafletSegments, type Segment } from "./richtext";
@@ -50,7 +49,7 @@ export interface ListItem {
 export type LeafletNode = (
   | { kind: "paragraph"; segments: Segment[]; size: "small" | "default" | "large" }
   | { kind: "heading"; level: 1 | 2 | 3 | 4 | 5 | 6; segments: Segment[] }
-  | { kind: "code"; code: string; lang?: BundledLanguage }
+  | { kind: "code"; code: string; lang?: string }
   | { kind: "quote"; segments: Segment[] }
   | { kind: "rule" }
   | { kind: "bsky"; uri: string }
@@ -131,7 +130,7 @@ function toNode(
   if (is(PubLeafletBlocksImage.mainSchema, block)) return toImage(block, did);
 
   if (is(PubLeafletBlocksCode.mainSchema, block)) {
-    return { kind: "code", code: block.plaintext, lang: toLanguage(block.language) };
+    return { kind: "code", code: block.plaintext, lang: block.language };
   }
 
   if (is(PubLeafletBlocksBlockquote.mainSchema, block)) {
@@ -211,16 +210,6 @@ function toListItem(item: UnorderedItem | OrderedItem, ordered: boolean, did: st
   }
 
   return result;
-}
-
-/** Only languages Shiki ships are highlighted; anything else renders as plain text. */
-function toLanguage(language: string | undefined): BundledLanguage | undefined {
-  const name = language?.toLowerCase();
-
-  if (!name || !Object.hasOwn(bundledLanguages, name)) return undefined;
-
-  // SAFETY: Object.hasOwn just confirmed `name` is a key of bundledLanguages.
-  return name as BundledLanguage;
 }
 
 function toAlign(alignment: string | undefined): Align | undefined {

@@ -5,6 +5,9 @@ import Page from "../layouts/Page.astro";
 import { getLatestPost } from "../lib/posts";
 import { DISPLAY_NAME, EMAIL, FEDIVERSE_HANDLE, FEDIVERSE_URL, VIDEOS } from "../site";
 
+// Rendered per request and cached at the edge; see routeRules.
+export const prerender = false;
+
 const post = await getLatestPost();
 
 const latestPost = post && {

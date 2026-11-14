@@ -1,25 +1,30 @@
 ---
-import type { GetStaticPaths } from "astro";
 import { Image } from "astro:assets";
 
 import me from "../../assets/matt.webp";
 import Link from "../../components/Link.astro";
 import LeafletContent from "../../components/leaflet/LeafletContent.astro";
 import Article from "../../layouts/Article.astro";
-import { getPosts, readingTime, type Post } from "../../lib/posts";
+import { assetExists, notFound } from "../../lib/assets";
+import { getPost, readingTime } from "../../lib/posts";
 import { BLUESKY_URL, DISPLAY_NAME } from "../../site";
 
-export const getStaticPaths = (async () => {
-  const posts = await getPosts();
+// Rendered per request and cached at the edge; see routeRules.
+export const prerender = false;
 
-  return posts.map((post) => ({ params: { rkey: post.rkey }, props: { post } }));
-}) satisfies GetStaticPaths;
+const post = await getPost(Astro.params.rkey ?? "");
 
-interface Props {
-  post: Post;
+if (!post) {
+  Astro.cache.set(false);
+
+  return notFound(Astro.url);
 }
 
-const { post } = Astro.props;
+// Cards are drawn at build time. A post published since the last deploy
+// uses the site card until the next one.
+const card = `/og/${post.rkey}.png`;
+const image = (await assetExists(card, Astro.url)) ? card : "/og/site.png";
+
 const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" });
 const time = readingTime(post.plaintext);
 ---
@@ -27,7 +32,7 @@ const time = readingTime(post.plaintext);
 <Article
   title={post.title}
   description={post.description ?? `by ${DISPLAY_NAME} · ${time}`}
-  image={`/og/${post.rkey}.png`}
+  {image}
   type="article"
   backHref="/writing"
   backLabel="writing"

@@ -1,6 +1,9 @@
 ---
 import { Image } from "astro:assets";
 
+// Rendered per request and cached at the edge; see routeRules.
+export const prerender = false;
+
 import me from "../../assets/matt.webp";
 import Link from "../../components/Link.astro";
 import Article from "../../layouts/Article.astro";

@@ -4,6 +4,9 @@ import Link from "../../components/Link.astro";
 import Page from "../../layouts/Page.astro";
 import { getSponsors, type Supporter } from "../../lib/support";
 
+// Rendered per request and cached at the edge; see routeRules.
+export const prerender = false;
+
 const cashApp = "https://cash.app/$mmatt625";
 
 const cashAppQr =

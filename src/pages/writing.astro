@@ -4,6 +4,9 @@ import Page from "../layouts/Page.astro";
 import { getPosts } from "../lib/posts";
 import { VIDEOS } from "../site";
 
+// Rendered per request and cached at the edge; see routeRules.
+export const prerender = false;
+
 const posts = await getPosts();
 const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "short", timeZone: "UTC" });
 ---

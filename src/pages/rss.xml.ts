@@ -4,6 +4,8 @@ import type { APIRoute } from "astro";
 import { getPosts } from "../lib/posts";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../site";
 
+export const prerender = false;
+
 function escape(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

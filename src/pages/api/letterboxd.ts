@@ -51,21 +51,19 @@ function latestFilm(xml: string): Film | null {
   return null;
 }
 
-export const GET: APIRoute = async () => {
+// Cached at the edge by routeRules, so Letterboxd sees about one request per half hour.
+export const GET: APIRoute = async (context) => {
   try {
     const response = await fetch(FEED, {
       headers: { "User-Agent": "mmatt.net (+https://mmatt.net)" },
-      // Let Cloudflare's edge cache the upstream feed so we don't hammer Letterboxd.
-      cf: { cacheTtl: 1800, cacheEverything: true },
     });
 
     if (!response.ok) throw new Error(`Letterboxd responded ${response.status}`);
 
-    return Response.json(latestFilm(await response.text()), {
-      headers: { "Cache-Control": "public, max-age=900" },
-    });
+    return Response.json(latestFilm(await response.text()));
   } catch (error) {
     console.error("letterboxd:", error);
+    context.cache.set(false);
 
     return Response.json(null, { status: 502 });
   }

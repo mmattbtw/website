@@ -1,18 +1,20 @@
 /**
- * Build-time access to my writing: site.standard.document records in my
- * publication, plus a few documents I wrote for other publications.
+ * My writing: site.standard.document records in my publication, plus a few
+ * documents I wrote for other publications. Read on demand; pages that use
+ * this are cached at the edge (see routeRules in astro.config.mjs), so there
+ * is deliberately no in-memory cache here that could go stale in a Worker.
  */
 import type { Did, ResourceUri } from "@atcute/lexicons";
 import { SiteStandardDocument, SiteStandardPublication } from "@atcute/standard-site";
 
-import { EXTERNAL_POSTS, PUBLICATION_URI } from "../site";
+import { DID, EXTERNAL_POSTS, PUBLICATION_URI } from "../site";
 import {
-  blobUrl,
   clientFor,
   getRecord,
   listRecords,
   parseAtUri,
   resolvePds,
+  rkeyOf,
   type Entry,
 } from "./atproto";
 import { isLeafletContent, toNodes, toPlaintext, type LeafletNode } from "./leaflet";
@@ -36,13 +38,20 @@ export interface Post {
 
 type Document = SiteStandardDocument.Main;
 
-let cache: Promise<Post[]> | undefined;
+/** A single post by record key, or `null` if there's no such post. */
+export async function getPost(rkey: string): Promise<Post | null> {
+  const external = EXTERNAL_POSTS.find((uri) => rkeyOf(uri) === rkey);
 
-/** All posts, newest first. Fetched once per build. */
-export function getPosts(): Promise<Post[]> {
-  cache ??= loadPosts();
+  if (external) return loadExternalPost(external);
 
-  return cache;
+  const [publication, document] = await Promise.all([
+    getRecord(PUBLICATION_URI, SiteStandardPublication.mainSchema),
+    getRecord(`at://${DID}/site.standard.document/${rkey}`, SiteStandardDocument.mainSchema),
+  ]);
+
+  if (!publication || document?.value.site !== PUBLICATION_URI) return null;
+
+  return toPost(document, publication.value, false);
 }
 
 export async function getLatestPost(): Promise<Post | undefined> {
@@ -57,7 +66,8 @@ export function readingTime(text: string): string {
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
 
-async function loadPosts(): Promise<Post[]> {
+/** All posts, newest first. */
+export async function getPosts(): Promise<Post[]> {
   const [publication, documents, external] = await Promise.all([
     getRecord(PUBLICATION_URI, SiteStandardPublication.mainSchema),
     listRecords("site.standard.document", SiteStandardDocument.mainSchema, 1000),

@@ -7,17 +7,20 @@ The previous Next.js version lives at [mmattbtw/old-website](https://github.com/
 
 ## How it works
 
-- **Static by default.** Every page is prerendered at build time. Writing, statuses, car stats,
-  referrals and sponsors are all fetched during the build.
+- **Data pages render on demand and are cached at the edge.** Home, writing, posts, RSS,
+  `/right/now`, support and referrals read my PDS in the Worker. Astro's route cache
+  (`routeRules` in `astro.config.mjs`, with the Cloudflare cache provider) keeps each response at
+  Cloudflare's edge for a few minutes, then serves it stale while a fresh copy renders. New posts
+  and statuses show up within minutes, with no rebuild.
+- **Everything else is prerendered:** socials, uses, the privacy policies, `/car` (its data is
+  frozen) and the social cards (`/og/*.png`, drawn with satori + sharp, which is too much CPU for a
+  free-plan Worker). A post published after the last deploy uses the site card until the next one.
 - **Islands for interactivity.** React components hydrate only where needed: the dithered video
-  backgrounds, the live info box on the home page, copy-to-clipboard buttons, and the car charts.
-- **One on-demand route.** `/api/letterboxd` runs in the Worker because Letterboxd's RSS has no
-  CORS headers. Everything else in the info box reads the PDS directly from the browser.
+  backgrounds, the live info box, copy-to-clipboard buttons, and the car charts. The info box reads
+  the PDS straight from the browser; Letterboxd goes through `/api/letterboxd` because its RSS has
+  no CORS headers.
 - **Redirects and headers** live in `astro.config.mjs` (`redirects`) and `public/_headers`. The
-  Cloudflare adapter turns the redirects into a `_redirects` file, so they're served before the
-  Worker runs.
-
-Because pages are static, new posts appear on the next build. The `deploy` workflow builds hourly.
+  adapter turns the redirects into a `_redirects` file, so they're served before the Worker runs.
 
 ## Layout
 
@@ -28,6 +31,8 @@ src/
     atproto.ts         typed listRecords / getRecord with schema validation
     records.ts         schemas for net.mmatt.*, fm.teal.* and referral records
     posts.ts           site.standard.document → Post
+    highlight.ts       Shiki with a fixed set of grammars (runs in the Worker)
+    og.tsx             social cards, rendered at build time
     leaflet.ts         Leaflet blocks → a small render tree
     richtext.ts        byte-indexed facets → styled segments
     bluesky.ts         embedded Bluesky posts, rendered statically
@@ -41,26 +46,19 @@ src/
 
 ```sh
 bun install
-bun run dev        # astro dev, running in workerd
+bun run dev        # astro dev, running in workerd (route caching is off in dev)
 bun run check      # astro check + oxlint (with the anti-slop rules) + prettier
 bun run preview    # build, then serve the real Worker with wrangler
-bun run deploy     # build and deploy with wrangler
 ```
-
-`GITHUB_TOKEN` (optional, at build time) lists GitHub sponsors on `/support`. Put it in `.env`
-locally.
 
 ## Deploying
 
-The `deploy` workflow builds on push, on a schedule and on demand. It deploys `main` when these repo
-secrets are set:
+[Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) deploys `main` on every
+push (build: `bun run build`, deploy: `bunx wrangler deploy`). The `check` workflow on GitHub only
+checks the code. The Worker is `mmatt-net`, served at mmatt.net and www.mmatt.net.
 
-- `CLOUDFLARE_API_TOKEN`: a token with the "Edit Cloudflare Workers" template
-- `CLOUDFLARE_ACCOUNT_ID`
-- `SPONSORS_TOKEN` (optional): a GitHub token that can read sponsors
-
-The Worker is named `mmatt-net`. To serve the site at mmatt.net, add the domain under the Worker's
-**Settings → Domains & Routes** once DNS is on Cloudflare.
+`GITHUB_TOKEN` (optional) lists GitHub sponsors on `/support`. Set it on the Worker with
+`bunx wrangler secret put GITHUB_TOKEN`; locally, put it in `.dev.vars`.
 
 ## Adding ATProto sign-in later
 

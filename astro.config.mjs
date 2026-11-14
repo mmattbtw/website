@@ -1,5 +1,6 @@
 // @ts-check
 import cloudflare from "@astrojs/cloudflare";
+import { cacheCloudflare } from "@astrojs/cloudflare/cache";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField, fontProviders } from "astro/config";
@@ -23,12 +24,28 @@ export default defineConfig({
   build: { format: "file" },
 
   adapter: cloudflare({
-    // Pages are prerendered in Node so build-time data fetching can use
-    // anything Node offers. On-demand routes still run in workerd.
+    // Prerendered pages (and the social cards, which need sharp) build in
+    // Node. On-demand routes run in workerd.
     prerenderEnvironment: "node",
     // Images are optimized once at build time; there is no runtime resizing.
     imageService: "compile",
   }),
+
+  // Pages that read my PDS render on demand and are cached at Cloudflare's
+  // edge, so new posts and statuses show up without a rebuild. `maxAge` is how
+  // long a copy is fresh; `swr` is how long a stale copy may be served while
+  // a fresh one renders in the background. A deploy starts a fresh cache.
+  cache: { provider: cacheCloudflare() },
+  routeRules: {
+    "/": { maxAge: 300, swr: 86400 },
+    "/writing": { maxAge: 300, swr: 86400 },
+    "/post/[rkey]": { maxAge: 300, swr: 86400 },
+    "/rss.xml": { maxAge: 900, swr: 86400 },
+    "/right/now": { maxAge: 120, swr: 86400 },
+    "/support": { maxAge: 3600, swr: 86400 },
+    "/support/referrals": { maxAge: 900, swr: 86400 },
+    "/api/letterboxd": { maxAge: 1800, swr: 86400 },
+  },
 
   // No sessions yet, so don't provision a KV namespace. Turn this back on
   // (and add a SESSION KV binding) when ATProto OAuth sign-in lands.

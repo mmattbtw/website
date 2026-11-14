@@ -64,9 +64,14 @@
 }
 
 /* Shiki emits both themes; pick one per color scheme. */
+.shiki {
+  overflow-x: auto;
+  padding: 1rem;
+}
+
 @media (prefers-color-scheme: dark) {
-  .astro-code,
-  .astro-code span {
+  .shiki,
+  .shiki span {
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
   }

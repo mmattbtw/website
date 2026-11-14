@@ -1,8 +1,7 @@
 ---
-import { Code } from "astro:components";
-
 import type { LeafletNode } from "../../lib/leaflet";
 import BlueskyPost from "./BlueskyPost.astro";
+import CodeBlock from "./CodeBlock.astro";
 import Image from "./Image.astro";
 import List from "./List.astro";
 import Segments from "./Segments.astro";
@@ -68,15 +67,7 @@ const alignClass = {
         return <Image image={node} />;
 
       case "code":
-        return (
-          <div class="mt-6 overflow-hidden rounded-sm text-sm">
-            <Code
-              code={node.code}
-              lang={node.lang ?? "plaintext"}
-              themes={{ light: "github-light", dark: "github-dark" }}
-            />
-          </div>
-        );
+        return <CodeBlock code={node.code} lang={node.lang} />;
 
       case "quote":
         return (

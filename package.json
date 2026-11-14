@@ -9,7 +9,6 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro build && wrangler dev",
-    "deploy": "astro build && wrangler deploy",
     "check": "astro check && bun run lint && prettier --check .",
     "lint": "oxlint --config .oxlintrc.json .",
     "format": "prettier --write .",

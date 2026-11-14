@@ -1,5 +1,5 @@
 /**
- * Build-time Bluesky post lookups, used to render embedded posts as static
+ * Bluesky post lookups, used to render embedded posts as static
  * HTML instead of shipping the embed.bsky.app iframe.
  */
 import { AppBskyEmbedImages, AppBskyFeedPost } from "@atcute/bluesky";
@@ -21,21 +21,14 @@ export interface EmbeddedPost {
   images: { thumb: string; alt: string }[];
 }
 
-const cache = new Map<string, Promise<EmbeddedPost | null>>();
+export async function getEmbeddedPost(uri: string): Promise<EmbeddedPost | null> {
+  try {
+    return await loadPost(uri);
+  } catch (error) {
+    console.warn(`Could not load Bluesky post ${uri}:`, error);
 
-export function getEmbeddedPost(uri: string): Promise<EmbeddedPost | null> {
-  let pending = cache.get(uri);
-
-  if (!pending) {
-    pending = loadPost(uri).catch((error) => {
-      console.warn(`Could not load Bluesky post ${uri}:`, error);
-
-      return null;
-    });
-    cache.set(uri, pending);
+    return null;
   }
-
-  return pending;
 }
 
 export function bskyAppUrl(uri: string): string {

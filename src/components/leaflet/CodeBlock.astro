@@ -1,0 +1,12 @@
+---
+import { highlight } from "../../lib/highlight";
+
+interface Props {
+  code: string;
+  lang?: string;
+}
+
+const html = await highlight(Astro.props.code, Astro.props.lang);
+---
+
+<div class="mt-6 overflow-hidden rounded-sm text-sm" set:html={html} />
