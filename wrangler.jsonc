@@ -4,6 +4,10 @@
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["global_fetch_strictly_public"],
   "main": "@astrojs/cloudflare/entrypoints/server",
+  "routes": [
+    { "pattern": "mmatt.net", "custom_domain": true },
+    { "pattern": "www.mmatt.net", "custom_domain": true },
+  ],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
